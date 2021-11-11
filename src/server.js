@@ -1,6 +1,6 @@
 import http from "http";
 import express from "express";
-import WebSocket, { WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 
 const app = express();
 
@@ -12,9 +12,21 @@ app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => res.render("home"));
+
 app.get("/*", (req, res) => res.redirect("home"));
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-server.listen(PORT, () => console.log(`Listening on http://localhost${PORT}`));
+wss.on("connection", (backSocket) => {
+  console.log("Connected to Browser");
+  backSocket.on("close", () => {
+    console.log("Disconnected from the browser");
+  });
+  backSocket.on("message", (message) => {
+    console.log(message.toString("utf-8")); //message => buffer
+  });
+  backSocket.send("hello");
+});
+
+server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
