@@ -18,15 +18,19 @@ app.get("/*", (req, res) => res.redirect("home"));
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+const sockets = [];
+
 wss.on("connection", (backSocket) => {
+  sockets.push(backSocket);
   console.log("Connected to Browser");
   backSocket.on("close", () => {
     console.log("Disconnected from the browser");
   });
   backSocket.on("message", (message) => {
-    console.log(message.toString("utf-8")); //message => buffer
+    sockets.forEach((element) => {
+      element.send(message.toString("utf-8"));
+    });
   });
-  backSocket.send("hello");
 });
 
 server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
