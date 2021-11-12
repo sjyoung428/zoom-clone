@@ -9,9 +9,12 @@ html(lang="ko")
     body 
         header 
             h1 Noom
-        main 
+        main
+            form#nick
+                input(type="text",placeholder="Choose your nickname",required)
+                button Save  
             ul 
-            form
+            form#msg
                 input(type="text",placeholder="Write your msg",required)
                 button Send 
         script(src="public/js/app.js") 
