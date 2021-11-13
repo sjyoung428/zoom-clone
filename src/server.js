@@ -13,7 +13,7 @@ app.use("/public", express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => res.render("home"));
 
-app.get("/*", (req, res) => res.redirect("home"));
+app.get("/*", (req, res) => res.redirect("/"));
 
 const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
