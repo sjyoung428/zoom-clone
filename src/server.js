@@ -19,11 +19,12 @@ const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (backSocket) => {
-  backSocket.on("enter_room", (roomName, hi) => {
-    console.log(roomName);
-    setTimeout(() => {
-      hi("hi i'm backend:)");
-    }, 3000);
+  backSocket.onAny((event) => {
+    console.log(`Socket Event: ${event}`);
+  });
+  backSocket.on("enter_room", (roomName, done) => {
+    backSocket.join(roomName);
+    done();
   });
 });
 
