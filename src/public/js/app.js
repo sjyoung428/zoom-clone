@@ -8,19 +8,30 @@ room.hidden = true;
 
 let roomName;
 
+const addMessage = (message) => {
+  const ul = room.querySelector("ul");
+  const li = document.createElement("li");
+  li.innerText = message;
+  ul.appendChild(li);
+};
+
 const showRoom = () => {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
-  h3.innerText = `${roomName}`;
+  h3.innerText = `Room: ${roomName}`;
 };
 
 const handleRoomSubmit = (event) => {
   event.preventDefault();
   const input = form.querySelector("input");
-  frontSocket.emit("enter_room", input.value, showRoom);
   roomName = input.value;
+  frontSocket.emit("enter_room", input.value, showRoom);
   input.value = "";
 };
 
 form.addEventListener("submit", handleRoomSubmit);
+
+frontSocket.on("welcome", () => {
+  addMessage("Someone Joined!");
+});

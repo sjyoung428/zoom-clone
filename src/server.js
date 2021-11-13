@@ -25,6 +25,7 @@ wsServer.on("connection", (backSocket) => {
   backSocket.on("enter_room", (roomName, done) => {
     backSocket.join(roomName);
     done();
+    backSocket.to(roomName).emit("welcome");
   });
 });
 
