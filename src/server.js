@@ -27,6 +27,9 @@ wsServer.on("connection", (backSocket) => {
     done();
     backSocket.to(roomName).emit("welcome");
   });
+  backSocket.on("disconnecting", () => {
+    backSocket.rooms.forEach((room) => backSocket.to(room).emit("bye"));
+  });
 });
 
 // import { WebSocketServer } from "ws";

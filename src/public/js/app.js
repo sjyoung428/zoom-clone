@@ -33,5 +33,8 @@ const handleRoomSubmit = (event) => {
 form.addEventListener("submit", handleRoomSubmit);
 
 frontSocket.on("welcome", () => {
-  addMessage("Someone Joined!");
+  addMessage("Someone Joined! :)");
+});
+frontSocket.on("bye", () => {
+  addMessage("Someone Left :(");
 });
