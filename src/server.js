@@ -30,6 +30,10 @@ wsServer.on("connection", (backSocket) => {
   backSocket.on("disconnecting", () => {
     backSocket.rooms.forEach((room) => backSocket.to(room).emit("bye"));
   });
+  backSocket.on("new_message", (msg, room, done) => {
+    backSocket.to(room).emit("new_message", msg);
+    done();
+  });
 });
 
 // import { WebSocketServer } from "ws";
