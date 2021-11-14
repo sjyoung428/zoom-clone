@@ -19,21 +19,25 @@ const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (backSocket) => {
+  backSocket["nickname"] = "Anonymous";
   backSocket.onAny((event) => {
     console.log(`Socket Event: ${event}`);
   });
   backSocket.on("enter_room", (roomName, done) => {
     backSocket.join(roomName);
     done();
-    backSocket.to(roomName).emit("welcome");
+    backSocket.to(roomName).emit("welcome", backSocket.nickname);
   });
   backSocket.on("disconnecting", () => {
-    backSocket.rooms.forEach((room) => backSocket.to(room).emit("bye"));
+    backSocket.rooms.forEach((room) =>
+      backSocket.to(room).emit("bye", backSocket.nickname)
+    );
   });
   backSocket.on("new_message", (msg, room, done) => {
-    backSocket.to(room).emit("new_message", msg);
+    backSocket.to(room).emit("new_message", `${backSocket.nickname}: ${msg}`);
     done();
   });
+  backSocket.on("nickname", (name) => (backSocket["nickname"] = name));
 });
 
 // import { WebSocketServer } from "ws";

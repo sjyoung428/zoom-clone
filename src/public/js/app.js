@@ -1,7 +1,8 @@
 const frontSocket = io();
 
 const welcome = document.getElementById("welcome");
-const form = welcome.querySelector("form");
+const nameForm = document.querySelector("#name");
+const roomNameForm = welcome.querySelector("#room__name");
 const room = document.getElementById("room");
 
 room.hidden = true;
@@ -17,7 +18,7 @@ const addMessage = (message) => {
 
 const handleMessageSubmit = (event) => {
   event.preventDefault();
-  const input = room.querySelector("input");
+  const input = room.querySelector("#msg input");
   const value = input.value;
   frontSocket.emit("new_message", input.value, roomName, () => {
     addMessage(`You: ${value}`);
@@ -25,32 +26,39 @@ const handleMessageSubmit = (event) => {
   input.value = "";
 };
 
+const handleNameForm = (event) => {
+  event.preventDefault();
+  const input = document.querySelector("#name input");
+  frontSocket.emit("nickname", input.value);
+};
+
 const showRoom = () => {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
   h3.innerText = `Room: ${roomName}`;
-  const form = room.querySelector("form");
-  form.addEventListener("submit", handleMessageSubmit);
+  const msgForm = room.querySelector("#msg");
+  msgForm.addEventListener("submit", handleMessageSubmit);
 };
 
 const handleRoomSubmit = (event) => {
   event.preventDefault();
-  const input = form.querySelector("input");
+  const input = roomNameForm.querySelector("input");
   roomName = input.value;
   frontSocket.emit("enter_room", input.value, showRoom);
   input.value = "";
 };
 
-form.addEventListener("submit", handleRoomSubmit);
+nameForm.addEventListener("submit", handleNameForm);
+roomNameForm.addEventListener("submit", handleRoomSubmit);
 
-frontSocket.on("welcome", () => {
-  addMessage("Someone Joined! :)");
+frontSocket.on("welcome", (user) => {
+  addMessage(`${user} Joined! :)`);
 });
-frontSocket.on("bye", () => {
-  addMessage("Someone Left :(");
+frontSocket.on("bye", (user) => {
+  addMessage(`${user} Left :(`);
 });
 
 frontSocket.on("new_message", (msg) => {
-  addMessage(`someone: ${msg}`);
+  addMessage(msg);
 });

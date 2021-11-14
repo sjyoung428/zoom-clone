@@ -10,13 +10,17 @@ html(lang="ko")
         header 
             h1 Noom
             #welcome 
-                form
+                form#name
+                    input(type="text",placeholder="your nickname",required)
+                    button save 
+
+                form#room__name
                     input(type="text",placeholder="room name",required)
                     button Enter room
             #room  
                 h3 
-                ul 
-                form
+                ul                  
+                form#msg
                     input(type="text",placeholder="your message",required)
                     button send
        
