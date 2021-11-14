@@ -16,13 +16,15 @@ html(lang="ko")
 
                 form#room__name
                     input(type="text",placeholder="room name",required)
-                    button Enter room
+                    button Enter room    
+                h4 Open room:
+                    ul#roomList         
             #room  
                 h3 
                 ul                  
                 form#msg
                     input(type="text",placeholder="your message",required)
                     button send
-       
+            
         script(src="/socket.io/socket.io.js") 
         script(src="public/js/app.js") 

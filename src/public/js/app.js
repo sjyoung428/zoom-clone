@@ -62,3 +62,15 @@ frontSocket.on("bye", (user) => {
 frontSocket.on("new_message", (msg) => {
   addMessage(msg);
 });
+frontSocket.on("room-change", (rooms) => {
+  const roomList = document.querySelector("#roomList");
+  if (rooms.length === 0) {
+    roomList.innerHTML = "";
+    return;
+  }
+  rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
+});

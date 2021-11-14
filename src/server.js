@@ -18,7 +18,23 @@ app.get("/*", (req, res) => res.redirect("/"));
 const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
 
+const publicRooms = () => {
+  const {
+    sockets: {
+      adapter: { sids, rooms },
+    },
+  } = wsServer;
+  const publicRooms = [];
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+  return publicRooms;
+}; // 방 찾기
+
 wsServer.on("connection", (backSocket) => {
+  wsServer.sockets.emit("room-change", publicRooms());
   backSocket["nickname"] = "Anonymous";
   backSocket.onAny((event) => {
     console.log(`Socket Event: ${event}`);
@@ -27,11 +43,15 @@ wsServer.on("connection", (backSocket) => {
     backSocket.join(roomName);
     done();
     backSocket.to(roomName).emit("welcome", backSocket.nickname);
+    wsServer.sockets.emit("room-change", publicRooms()); //전체 소켓에 알림
   });
   backSocket.on("disconnecting", () => {
     backSocket.rooms.forEach((room) =>
       backSocket.to(room).emit("bye", backSocket.nickname)
     );
+  });
+  backSocket.on("disconnect", () => {
+    wsServer.sockets.emit("room-change", publicRooms());
   });
   backSocket.on("new_message", (msg, room, done) => {
     backSocket.to(room).emit("new_message", `${backSocket.nickname}: ${msg}`);
