@@ -1,6 +1,7 @@
 import http from "http";
 import express from "express";
 import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 
 const app = express();
 
@@ -16,8 +17,15 @@ app.get("/", (req, res) => res.render("home"));
 app.get("/*", (req, res) => res.redirect("/"));
 
 const httpServer = http.createServer(app);
-const wsServer = new Server(httpServer);
-
+const wsServer = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true,
+  },
+});
+instrument(wsServer, {
+  auth: false,
+});
 const publicRooms = () => {
   const {
     sockets: {
@@ -33,6 +41,10 @@ const publicRooms = () => {
   return publicRooms;
 }; // 방 찾기
 
+const countRoom = (roomName) => {
+  return wsServer.sockets.adapter.rooms.get(roomName)?.size;
+};
+
 wsServer.on("connection", (backSocket) => {
   wsServer.sockets.emit("room-change", publicRooms());
   backSocket["nickname"] = "Anonymous";
@@ -41,13 +53,15 @@ wsServer.on("connection", (backSocket) => {
   });
   backSocket.on("enter_room", (roomName, done) => {
     backSocket.join(roomName);
-    done();
-    backSocket.to(roomName).emit("welcome", backSocket.nickname);
+    done(countRoom(roomName));
+    backSocket
+      .to(roomName)
+      .emit("welcome", backSocket.nickname, countRoom(roomName));
     wsServer.sockets.emit("room-change", publicRooms()); //전체 소켓에 알림
   });
   backSocket.on("disconnecting", () => {
     backSocket.rooms.forEach((room) =>
-      backSocket.to(room).emit("bye", backSocket.nickname)
+      backSocket.to(room).emit("bye", backSocket.nickname, countRoom(room) - 1)
     );
   });
   backSocket.on("disconnect", () => {

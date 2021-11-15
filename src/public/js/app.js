@@ -32,11 +32,11 @@ const handleNameForm = (event) => {
   frontSocket.emit("nickname", input.value);
 };
 
-const showRoom = () => {
+const showRoom = (newCount) => {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
-  h3.innerText = `Room: ${roomName}`;
+  h3.innerText = `Room: ${roomName} (${newCount})`;
   const msgForm = room.querySelector("#msg");
   msgForm.addEventListener("submit", handleMessageSubmit);
 };
@@ -52,10 +52,14 @@ const handleRoomSubmit = (event) => {
 nameForm.addEventListener("submit", handleNameForm);
 roomNameForm.addEventListener("submit", handleRoomSubmit);
 
-frontSocket.on("welcome", (user) => {
+frontSocket.on("welcome", (user, newCount) => {
+  const h3 = room.querySelector("h3");
+  h3.innerText = `Room: ${roomName} (${newCount})`;
   addMessage(`${user} Joined! :)`);
 });
-frontSocket.on("bye", (user) => {
+frontSocket.on("bye", (user, newCount) => {
+  const h3 = room.querySelector("h3");
+  h3.innerText = `Room: ${roomName} (${newCount})`;
   addMessage(`${user} Left :(`);
 });
 
