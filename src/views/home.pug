@@ -4,27 +4,48 @@ html(lang="ko")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Noom
         link(rel="stylesheet", href="https://unpkg.com/mvp.css")
+        title Noom
     body 
-        header 
-            h1 Noom
-            #welcome 
-                form#name
-                    input(type="text",placeholder="your nickname",required)
-                    button save 
-
-                form#room__name
-                    input(type="text",placeholder="room name",required)
-                    button Enter room    
-                h4 Open room:
-                    ul#roomList         
-            #room  
-                h3 
-                ul                  
-                form#msg
-                    input(type="text",placeholder="your message",required)
-                    button send
-            
+        main 
+            #myStream 
+                video#myFace(autoplay, playsinline, muted, heigth="400",width="400")
+                button#mute Mute
+                button#camera Turn Camera Off
         script(src="/socket.io/socket.io.js") 
         script(src="public/js/app.js") 
+
+
+
+
+
+//- doctype html
+//- html(lang="ko")
+//-     head
+//-         meta(charset="UTF-8")
+//-         meta(http-equiv="X-UA-Compatible", content="IE=edge")
+//-         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+//-         title Noom
+//-         link(rel="stylesheet", href="https://unpkg.com/mvp.css")
+//-     body 
+//-         header 
+//-             h1 Noom
+//-             #welcome 
+//-                 form#name
+//-                     input(type="text",placeholder="your nickname",required)
+//-                     button save 
+
+//-                 form#room__name
+//-                     input(type="text",placeholder="room name",required)
+//-                     button Enter room    
+//-                 h4 Open room:
+//-                     ul#roomList         
+//-             #room  
+//-                 h3 
+//-                 ul                  
+//-                 form#msg
+//-                     input(type="text",placeholder="your message",required)
+//-                     button send
+            
+//-         script(src="/socket.io/socket.io.js") 
+//-         script(src="public/js/app.js") 
