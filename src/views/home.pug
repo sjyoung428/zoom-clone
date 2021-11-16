@@ -9,9 +9,10 @@ html(lang="ko")
     body 
         main 
             #myStream 
-                video#myFace(autoplay, playsinline, muted, heigth="400",width="400")
+                video#myFace(autoplay, playsinline, heigth="400",width="400")
                 button#mute Mute
                 button#camera Turn Camera Off
+                select#cameras(name="") 
         script(src="/socket.io/socket.io.js") 
         script(src="public/js/app.js") 
 

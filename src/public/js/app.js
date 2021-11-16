@@ -3,18 +3,44 @@ const socket = io();
 const myFace = document.getElementById("myFace");
 const muteBtn = document.getElementById("mute");
 const cameraBtn = document.getElementById("camera");
+const cameraSelect = document.getElementById("cameras");
 
 let stream;
 let muted = false;
 let cameraOff = false;
 
-const getMedia = async () => {
+const getCameras = async () => {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const cameras = devices.filter((device) => device.kind === "videoinput");
+  const currentCamera = stream.getVideoTracks()[0];
+  cameras.forEach((camera) => {
+    const option = document.createElement("option");
+    option.value = camera.deviceId;
+    option.innerText = camera.label;
+    if (currentCamera.label === camera.label) {
+      option.selected = true;
+    }
+    cameraSelect.appendChild(option);
+  });
+};
+
+const getMedia = async (deviceId) => {
+  const initCamera = {
+    audio: true,
+    video: { facingMode: "user" },
+  };
+  const changeCamera = {
+    audio: true,
+    video: { deviceId: { exact: deviceId } },
+  };
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
+    stream = await navigator.mediaDevices.getUserMedia(
+      deviceId ? changeCamera : initCamera
+    );
     myFace.srcObject = stream;
+    if (!deviceId) {
+      await getCameras();
+    }
   } catch (error) {
     console.log(error);
   }
@@ -22,6 +48,7 @@ const getMedia = async () => {
 getMedia();
 
 const handleMuteClick = () => {
+  stream.getAudioTracks().forEach((track) => (track.enabled = !track.enabled));
   if (muted) {
     muteBtn.innerText = "Mute";
     muted = false;
@@ -31,6 +58,8 @@ const handleMuteClick = () => {
   }
 };
 const handleCameraClick = () => {
+  stream.getVideoTracks().forEach((track) => (track.enabled = !track.enabled));
+
   if (cameraOff) {
     cameraBtn.innerText = "Turn Camera Off";
     cameraOff = false;
@@ -39,9 +68,13 @@ const handleCameraClick = () => {
     cameraOff = true;
   }
 };
+const handleCameraChange = () => {
+  getMedia(cameraSelect.value);
+};
 
 muteBtn.addEventListener("click", handleMuteClick);
 cameraBtn.addEventListener("click", handleCameraClick);
+cameraSelect.addEventListener("input", handleCameraChange);
 
 // const welcome = document.getElementById("welcome");
 // const nameForm = document.querySelector("#name");
