@@ -20,74 +20,20 @@ const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (socket) => {
-  socket.on("join-room", (roomName) => {
+  socket.on("join_room", (roomName) => {
     socket.join(roomName);
     socket.to(roomName).emit("welcome");
   });
   socket.on("offer", (offer, roomName) => {
     socket.to(roomName).emit("offer", offer);
   });
-  socket.on("answer", (anwser, roomName) => {
-    socket.to(roomName).emit("answer", anwser);
+  socket.on("answer", (answer, roomName) => {
+    socket.to(roomName).emit("answer", answer);
+  });
+  socket.on("ice", (ice, roomName) => {
+    socket.to(roomName).emit("ice", ice);
   });
 });
-
-// const wsServer = new Server(httpServer, {
-//   cors: {
-//     origin: ["https://admin.socket.io"],
-//     credentials: true,
-//   },
-// });
-// instrument(wsServer, {
-//   auth: false,
-// });
-// const publicRooms = () => {
-//   const {
-//     sockets: {
-//       adapter: { sids, rooms },
-//     },
-//   } = wsServer;
-//   const publicRooms = [];
-//   rooms.forEach((_, key) => {
-//     if (sids.get(key) === undefined) {
-//       publicRooms.push(key);
-//     }
-//   });
-//   return publicRooms;
-// }; // 방 찾기
-
-// const countRoom = (roomName) => {
-//   return wsServer.sockets.adapter.rooms.get(roomName)?.size;
-// };
-
-// wsServer.on("connection", (backSocket) => {
-//   wsServer.sockets.emit("room-change", publicRooms());
-//   backSocket["nickname"] = "Anonymous";
-//   backSocket.onAny((event) => {
-//     console.log(`Socket Event: ${event}`);
-//   });
-//   backSocket.on("enter_room", (roomName, done) => {
-//     backSocket.join(roomName);
-//     done(countRoom(roomName));
-//     backSocket
-//       .to(roomName)
-//       .emit("welcome", backSocket.nickname, countRoom(roomName));
-//     wsServer.sockets.emit("room-change", publicRooms()); //전체 소켓에 알림
-//   });
-//   backSocket.on("disconnecting", () => {
-//     backSocket.rooms.forEach((room) =>
-//       backSocket.to(room).emit("bye", backSocket.nickname, countRoom(room) - 1)
-//     );
-//   });
-//   backSocket.on("disconnect", () => {
-//     wsServer.sockets.emit("room-change", publicRooms());
-//   });
-//   backSocket.on("new_message", (msg, room, done) => {
-//     backSocket.to(room).emit("new_message", `${backSocket.nickname}: ${msg}`);
-//     done();
-//   });
-//   backSocket.on("nickname", (name) => (backSocket["nickname"] = name));
-// });
 
 httpServer.listen(PORT, () =>
   console.log(`Listening on http://localhost:${PORT}`)
