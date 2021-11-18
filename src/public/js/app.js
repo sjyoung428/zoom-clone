@@ -85,17 +85,18 @@ cameraSelect.addEventListener("input", handleCameraChange);
 const welcome = document.getElementById("welcome");
 const welcomeForm = document.querySelector("form");
 
-const startMedia = async () => {
+const initCall = async () => {
   welcome.hidden = true;
   call.hidden = false;
   await getMedia();
   makeConnection();
 };
 
-const handleWelcomeSubmit = (event) => {
+const handleWelcomeSubmit = async (event) => {
   event.preventDefault();
   const input = welcomeForm.querySelector("input");
-  socket.emit("join-room", input.value, startMedia);
+  await initCall();
+  socket.emit("join-room", input.value);
   roomName = input.value;
   input.value = "";
 };
@@ -104,6 +105,8 @@ welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 
 // Socket Code..https://codesandbox.io/s/a09blueprint-forked-ifuw3?file=/src/index.js
 
+//browser A
+
 socket.on("welcome", async () => {
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
@@ -111,8 +114,16 @@ socket.on("welcome", async () => {
   socket.emit("offer", offer, roomName);
 });
 
-socket.on("offer", (offer) => console.log(offer));
+//browser B
+socket.on("offer", async (offer) => {
+  myPeerConnection.setRemoteDescription(offer);
+  const answer = await myPeerConnection.createAnswer(offer);
+  socket.emit("answer", answer, roomName);
+});
 
+socket.on("answer", (answer) => {
+  myPeerConnection.setRemoteDescription(answer);
+});
 //RTC Code..
 
 const makeConnection = () => {
