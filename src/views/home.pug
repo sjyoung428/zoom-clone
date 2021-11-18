@@ -7,12 +7,17 @@ html(lang="ko")
         link(rel="stylesheet", href="https://unpkg.com/mvp.css")
         title Noom
     body 
-        main 
-            #myStream 
-                video#myFace(autoplay, playsinline, heigth="400",width="400")
-                button#mute Mute
-                button#camera Turn Camera Off
-                select#cameras(name="") 
+        main
+            #welcome 
+                form
+                    input(type="text",placeholder="Room Name",required)
+                    button Enter Room
+            #call 
+                #myStream 
+                    video#myFace(autoplay, playsinline, heigth="400",width="400")
+                    button#mute Mute
+                    button#camera Turn Camera Off
+                    select#cameras(name="") 
         script(src="/socket.io/socket.io.js") 
         script(src="public/js/app.js") 
 
